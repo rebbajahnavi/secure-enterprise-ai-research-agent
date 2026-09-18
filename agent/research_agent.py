@@ -1,10 +1,41 @@
+
+from services.security_audit import log_security_violation
+from auth.guardrails import validate_query
 from rag.retrieval import search_documents
 from services.versioning import get_latest_version
 from services.llm import prepare_llm_request, generate_answer
 from services.audit import log_request
 
-def research(user_id, query):
-    results = search_documents(user_id, query)
+def research(user_id, query, role="Intern"):
+    validation = validate_query(query, role)
+
+    if not validation["allowed"]:
+        result = {
+            "status": "security_violation",
+            "answer": validation["message"],
+            "sources": [],
+            "llm_request": None,
+            "violation_type": validation["violation_type"]
+        }
+
+        log_security_violation(
+        role,
+        query,
+        validation["violation_type"]
+        )
+
+        log_request(
+            user_id,
+            query,
+            result["status"],
+            [],
+            "blocked",
+            []
+        )
+
+        return result
+
+    results = search_documents(user_id, query, role)
 
     if not results:
         result = {

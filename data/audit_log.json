@@ -196,5 +196,176 @@
     "authorization_decision": "denied",
     "llm_evidence_ids": [],
     "sources": []
+  },
+  {
+    "timestamp": "2026-09-18T14:25:12.374572",
+    "user_id": "U102",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:25:50.941216",
+    "user_id": "U205",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "no_accessible_evidence",
+    "authorization_decision": "denied",
+    "llm_evidence_ids": [],
+    "sources": []
+  },
+  {
+    "timestamp": "2026-09-18T14:31:09.972184",
+    "user_id": "U102",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:31:09.974906",
+    "user_id": "U205",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "no_accessible_evidence",
+    "authorization_decision": "denied",
+    "llm_evidence_ids": [],
+    "sources": []
+  },
+  {
+    "timestamp": "2026-09-18T14:31:09.992490",
+    "user_id": "U301",
+    "query": "What is the Q4 forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:31:57.541261",
+    "user_id": "U102",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:32:12.123925",
+    "user_id": "U205",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "no_accessible_evidence",
+    "authorization_decision": "denied",
+    "llm_evidence_ids": [],
+    "sources": []
+  },
+  {
+    "timestamp": "2026-09-18T14:32:25.103090",
+    "user_id": "U301",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:33:05.825044",
+    "user_id": "U205",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "no_accessible_evidence",
+    "authorization_decision": "denied",
+    "llm_evidence_ids": [],
+    "sources": []
+  },
+  {
+    "timestamp": "2026-09-18T14:33:23.587895",
+    "user_id": "U102",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T14:33:40.657984",
+    "user_id": "U301",
+    "query": "What is the Q4 revenue forecast?",
+    "status": "success",
+    "authorization_decision": "authorized",
+    "llm_evidence_ids": [
+      "DOC-101"
+    ],
+    "sources": [
+      {
+        "document_id": "DOC-101",
+        "title": "Q4 Revenue Forecast",
+        "version": "2.0",
+        "effective_date": "2026-09-01"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-09-18T16:09:20.025143",
+    "user_id": "U102",
+    "query": "WHat is the Q4 revenue forecast?",
+    "status": "no_accessible_evidence",
+    "authorization_decision": "denied",
+    "llm_evidence_ids": [],
+    "sources": []
   }
 ]

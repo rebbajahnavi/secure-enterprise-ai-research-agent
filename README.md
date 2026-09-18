@@ -382,7 +382,3 @@ Unauthorized document content is removed before the LLM receives evidence.
 
 ## Testing
 
-Run:
-
-```powershell
-python -m pytest -v
