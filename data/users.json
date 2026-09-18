@@ -1,0 +1,20 @@
+[
+  {
+    "user_id": "U102",
+    "role": "Finance",
+    "department": "Finance",
+    "clearance": "Internal"
+  },
+  {
+    "user_id": "U205",
+    "role": "Marketing",
+    "department": "Marketing",
+    "clearance": "Internal"
+  },
+  {
+    "user_id": "U301",
+    "role": "Finance",
+    "department": "Finance",
+    "clearance": "Internal"
+  }
+]
