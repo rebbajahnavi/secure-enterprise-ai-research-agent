@@ -1,573 +1,322 @@
 # The Employee Who Asked for Too Much
 
-## Team Details
+## 1. Team Details
 
-**Team Name:** Fast & Curious
+**Team Name / ID:** Fast & Curious
 
-**Team Members:** [Add all 5 team member names]
+**Team Lead:** GURRAM INDUPRIYA
 
----
+**Team Members:**
 
-## Problem Statement
+* KONDURI SRI HARSHITHA
+* KANDLAKUTI DIVYA
+* REBBA JAHNAVI
+* ABBAGOUNI RISHITHA
 
-**The Employee Who Asked for Too Much**
+**Repo Link (Optional):** https://github.com/rebbajahnavi/secure-enterprise-ai-research-agent
 
-Company internal documents contain information with different sensitivity levels such as Public, Internal, Confidential, and Restricted. Employees have different permissions based on their roles and access levels.
-
-The challenge is to build an AI research assistant that can search enterprise documents and answer employee questions while ensuring that employees never receive information they are not authorized to access.
-
-A critical requirement is that unauthorized document content must never be passed to the LLM merely because it is relevant to the user's question.
-
----
-
-## TL;DR
-
-We built a secure enterprise AI research assistant that answers employee questions using company documents while enforcing authorization before information reaches the AI model.
-
-The system combines role-based access control, document-level authorization, security-level filtering, query guardrails, version-aware evidence selection, source citations, and security audit logging.
-
-Unauthorized or sensitive requests are blocked before the LLM receives any evidence.
-
-The prototype demonstrates authorized information retrieval, prevention of restricted information disclosure, and selection of the latest authorized document version.
+**Demo Link (Optional):** https://secure-enterprise-ai-research-agent-fastandcurious.streamlit.app/
 
 ---
 
-## Scope
+## 2. Problem Statement
 
-### In Scope
+# The Employee Who Asked for Too Much
 
-* Natural-language questions from employees
-* Predefined employee identities and roles for prototype demonstration
-* Role-based permissions
-* Document classification and security levels
-* Document-level authorization
-* Security-level filtering during retrieval
-* Query guardrails for sensitive requests
-* Protection against requests for credentials, payroll, PII, and executive-private information
-* Retrieval of authorized documents
-* Latest-version selection for conflicting or outdated authorized documents
-* Answers based only on authorized evidence
-* Source citations
-* Request and security audit logging
-* Admin security console for reviewing blocked attempts
-* Streamlit-based demonstration interface
+## Context
 
-### Out of Scope
+Your company has thousands of internal documents. Employees can ask questions such as:
 
-* Production-grade employee authentication
-* Enterprise SSO integration
-* Full enterprise document-management integration
-* Production-scale vector databases
-* Automated ingestion from live corporate systems
-* Production deployment
-* Compliance certification
-* Enterprise-wide identity and access management
+**"What was the revenue forecast for Q4?"**
 
----
+An AI assistant should be able to search documents, understand them, compare information and answer questions. But not every employee is allowed to access every document. Documents have classifications:
 
-## Why is this Agentic?
+* Public
+* Internal
+* Confidential
+* Restricted
 
-The system follows a controlled research workflow rather than directly sending a user's question to an LLM.
+Different employees have different permissions. The assistant must answer a question **without exposing information that the employee is not authorized to access**.
 
-For each request, the workflow:
+Documents may also:
 
-1. Receives the user's question and identity/role context.
-2. Validates the query against security guardrails.
-3. Retrieves candidate information from enterprise documents.
-4. Applies authorization and security-level checks.
-5. Removes inaccessible information before LLM processing.
-6. Selects the latest authorized version when multiple authorized documents exist.
-7. Builds an evidence set using only authorized documents.
-8. Sends only that authorized evidence to the LLM.
-9. Generates an answer with source information.
-10. Records the request and authorization decision in the audit log.
+* contradict each other
+* be outdated
+* have different versions
+* contain incomplete information
 
-This controlled sequence allows the research process to make authorization-aware decisions before AI generation.
+**Critical requirement**
+
+An unauthorized document must **never be provided to the LLM simply because it is relevant to the question**.
+
+## The Challenge
+
+Build a secure enterprise research agent that answers employee questions over internal documents while enforcing authorization. Documents have classifications and access rules. Relevant information that the requesting employee is not authorized to access must never be provided to the language model or revealed in the final answer.
+
+## Core Requirements
+
+* Accept a natural-language employee question and user context.
+* Ingest documents with classification, department, owner, and access-control metadata.
+* Search for relevant candidates but enforce authorization before document content reaches the LLM.
+* Handle outdated and conflicting authorized documents.
+* Return an answer with citations to the evidence the user is allowed to access.
+* Record an audit trail of the request, authorization decisions, and evidence used.
+* Safely respond when the answer exists only in documents the user cannot access.
 
 ---
 
-## Target Audience
+## 3. TL;DR
 
-The prototype is designed for organizations where employees need to search internal information while respecting access-control policies.
+**Problem:** AI assistants can leak sensitive enterprise data when retrieval ignores employee access permissions.
 
-Potential users include:
+**Solution:** Our secure research agent applies authorization before LLM processing, filters evidence by access level, resolves document versions, provides citations, and records audit information.
 
-* Employees
-* Managers
-* Security teams
-* IT administrators
-* Compliance teams
-* Enterprise knowledge-management teams
-
-The prototype particularly demonstrates how a security-conscious AI assistant can be used in an enterprise environment.
+**Who benefits:** Enterprise employees receive trustworthy answers while organizations reduce the risk of unauthorized data exposure and improve auditability.
 
 ---
 
-## Architecture
+## 4. Scope of the Project
 
-The core security architecture is:
+**What are you building?**
 
-```text
-Employee
-   ↓
-Streamlit UI
-   ↓
-Research Agent
-   ↓
-Query Security Guardrails
-   ↓
-Document Retrieval
-   ↓
-Authorization + Security-Level Check
-   ↓
-Latest Authorized Version Selection
-   ↓
-Authorized Evidence Only
-   ↓
-LLM
-   ↓
-Answer + Sources
-   ↓
-Audit Logging
-```
+A secure enterprise research agent that accepts employee questions, searches internal documents, enforces authorization before LLM processing, selects the latest authorized evidence, provides citations, and records security decisions.
 
-The most important security boundary is between retrieval and LLM processing.
+**How does it solve the problem statement?**
 
-The system follows:
+The system separates retrieval from authorization. Relevant documents are filtered according to user permissions before their content can become LLM evidence. If no authorized evidence exists, the system refuses to provide the protected information.
 
-```text
-Search
-  ↓
-Authorization Filter
-  ↓
-Remove Unauthorized Documents
-  ↓
-Version / Conflict Check
-  ↓
-Authorized Evidence
-  ↓
-LLM
-```
+**Key features you're building for this hackathon:**
 
-It does **not** follow:
+* **Pre-LLM Authorization Firewall** — prevents unauthorized document content from reaching the LLM.
+* **Role-Based Access Control** — applies security levels and role permissions to retrieval.
+* **Version & Conflict Resolver** — selects the latest effective authorized document.
+* **Security Query Guardrails** — blocks sensitive requests such as credential access and unauthorized payroll/PII requests.
+* **Evidence + Citations** — identifies the authorized documents used for the answer.
+* **Audit Trail** — records requests, authorization decisions, evidence IDs, and security violations.
 
-```text
-Search
-  ↓
-All Documents
-  ↓
-LLM
-  ↓
-Ask LLM to decide what the user can see
-```
+**What are you deliberately NOT doing?**
 
-This prevents unauthorized document content from being supplied to the LLM.
+We are not building a complete enterprise document-management system, training our own LLM, or allowing the LLM to access unauthorized documents. Production SSO and enterprise identity integration are also outside the current prototype.
 
 ---
 
-## Agents
+## 5. Why an Agentic Approach?
 
-### Research Agent
+**What does your agent decide or do on its own?**
 
-The Research Agent coordinates the secure research workflow.
+The research workflow analyzes the employee query, retrieves relevant authorized evidence, checks security constraints, selects the latest valid evidence, prepares the permitted context, generates an answer, and records the decision.
 
-Its responsibilities include:
+**Why wouldn't a fixed script, if-else rules, or a simple chatbot be enough?**
 
-* Receiving the user question
-* Running security validation
-* Calling authorized retrieval
-* Selecting the latest authorized evidence
-* Preparing the LLM request
-* Generating the response
-* Returning source information
-* Recording the authorization decision
-
-### Security Guardrail
-
-The security guardrail checks potentially sensitive requests before the normal research workflow continues.
-
-Examples include requests involving:
-
-* Salary
-* Payroll
-* Passwords or credentials
-* PII
-* Executive-private information
-
-Blocked requests are logged as security violations.
+Enterprise research questions can require multiple steps: retrieving relevant documents, applying authorization, comparing versions, selecting valid evidence, and generating a cited response. A controlled agent workflow combines these steps while keeping security checks outside the LLM.
 
 ---
 
-## Services
+## 6. Who It's For & What Changes
 
-### Authorization Service
+**Who or what is this for?**
 
-The authorization layer checks:
+Enterprise employees and organizations that need secure and reliable access to internal knowledge.
 
-* User clearance
-* Document classification
-* Department
-* Role
-* Document access metadata
+**The world today, without your solution:**
 
-A document is returned only when the user's access requirements are satisfied.
+Employees may need to search multiple internal systems manually, while an AI assistant without authorization-aware retrieval could expose information from documents the employee is not permitted to access. Outdated versions and conflicting information can also produce unreliable answers.
 
-### RBAC Service
+**The world with your solution, fully built and scaled to production:**
 
-The prototype includes four demonstration roles:
+Employees can ask questions naturally and receive answers based only on authorized evidence. Organizations can enforce access policies before AI processing while maintaining an audit trail of requests and evidence.
 
-| Role         | Access Level |
-| ------------ | -----------: |
-| Intern       |            1 |
-| Manager      |            2 |
-| HR Admin     |            3 |
-| System Admin |            4 |
+**What your hackathon build actually delivers today:**
 
-Permissions are mapped to the role.
+A working Streamlit prototype that accepts employee questions, applies access-control checks, retrieves permitted documents, handles document versions, generates evidence-backed answers, blocks sensitive requests, refuses inaccessible information, and records security/audit information.
 
-### Retrieval Service
+**Before vs. After**
 
-The retrieval service searches documents using the user's question while applying authorization and security-level filtering.
-
-Documents above the user's permitted security level are excluded.
-
-### Versioning Service
-
-When multiple authorized documents contain different versions of related information, the system selects the latest version using the effective date and version number.
-
-### LLM Service
-
-The LLM receives only the authorized evidence selected by the secure workflow.
-
-The prompt explicitly instructs the model to use only the supplied authorized evidence.
-
-### Audit Service
-
-The system records request information, authorization decisions, selected evidence, and security violations.
+| What Changes         | Today                                  | With Our Current Build                            | At Production Scale                       |
+| :------------------- | :------------------------------------- | :------------------------------------------------ | :---------------------------------------- |
+| Data access security | Permissions may be checked separately  | Authorization is enforced before LLM evidence     | Centralized enterprise policy enforcement |
+| Sensitive requests   | Manual/security-policy dependent       | Query guardrails block defined sensitive requests | Enterprise DLP and policy engine          |
+| Outdated information | Employees may encounter older versions | Latest authorized version is selected             | Automated document lifecycle management   |
+| Auditability         | Limited/manual tracking                | Requests and security decisions are logged        | Compliance-grade centralized audit system |
 
 ---
 
-## Memory
+## 7. Architecture & Agents
 
-The prototype uses document metadata and local audit records rather than persistent conversational memory.
+**How is your system put together?**
 
-Documents contain metadata such as:
+Employee → Streamlit UI → Research Agent → Query Guardrails → Authorized Retrieval → Security-Level Check → Version Resolver → Authorized Evidence → LLM → Answer + Citations → Audit Log.
 
-* Document ID
-* Title
-* Classification
-* Security level
-* Allowed departments
-* Allowed roles
-* Version
-* Effective date
-* Content
+### 7.1 Agents
 
-Security audit records contain:
+* **Research Agent:** Coordinates the research workflow. It validates the query, retrieves permitted evidence, selects the latest authorized document, prepares the LLM context, generates the response, and records the decision.
 
-* Timestamp
-* User role
-* Query
-* Violation type
+* **Security Guardrail:** Checks sensitive queries before retrieval and blocks unauthorized requests such as credential access or restricted payroll/PII requests.
 
-This allows the prototype to maintain traceability of security-related requests.
+### 7.2 Services, APIs, Databases & Memory
 
----
+* **Authorization Service:** Checks user clearance, department, role, and document classification before content is used.
+* **RBAC Service:** Maps prototype roles to security levels and permitted information categories.
+* **Retrieval Service:** Searches authorized documents using query/document relevance matching and security filtering.
+* **Versioning Service:** Selects the latest effective version from authorized matching documents.
+* **LLM Service:** Builds a prompt using only authorized evidence and generates the final response.
+* **Audit Service:** Records requests, authorization decisions, evidence IDs, and sources.
+* **Security Audit Service:** Stores blocked security attempts in a CSV audit log.
+* **Document Storage:** JSON files store sample users and enterprise documents.
 
-## Example Workflow
+**How does your system remember things (memory & state)?**
 
-### Scenario 1 — Authorized Request
+The prototype does not use conversational memory. It maintains document metadata, user permissions, and audit records as persistent local JSON/CSV state so each request can be independently authorized and audited.
 
-**User:** U102
-**Role:** Manager
-**Question:** What is the Q4 revenue forecast?
+**Diagram Link (Optional):** N/A
 
-The system identifies an authorized Finance document:
+### 7.3 Example Walkthrough
 
-**DOC-101 — Q4 Revenue Forecast — Version 2.0**
+**Example input:**
+U102 asks: "What is the Q4 revenue forecast?"
 
-The document is allowed through the authorization layer.
+1. **Employee/UI** submits the natural-language question with the selected user context.
+2. **Security Guardrail** checks whether the query contains a blocked sensitive request.
+3. **Retrieval Service** searches documents while applying the user's authorization and security level.
+4. **Version Resolver** selects the latest authorized matching evidence.
+5. **Research Agent** passes only the authorized evidence to the LLM.
+6. **LLM Service** generates an answer using only the supplied authorized evidence.
+7. **Audit Service** records the request, authorization decision, and evidence used.
 
-Only DOC-101 is provided as LLM evidence.
+**Final output:**
+"Q4 projected revenue is 120 crore." with citation to DOC-101, version 2.0.
 
-The assistant returns the authorized forecast information and cites DOC-101.
+**Anything special about how your workflow runs?**
 
----
-
-### Scenario 2 — Restricted Information
-
-**User:** U205
-**Role:** Manager
-**Question:** What is the Q4 revenue forecast?
-
-A Restricted Executive-only document contains a different forecast.
-
-However, the user's authorization does not permit access to that document.
-
-The document is removed before LLM processing.
-
-The result is:
-
-```text
-ACCESS DENIED
-LLM Evidence: None
-```
-
-The restricted value is not disclosed.
+The most important security boundary occurs before the LLM. The LLM never receives unauthorized document content and is instructed to answer only from the authorized evidence supplied by the application.
 
 ---
 
-### Scenario 3 — Conflicting Authorized Versions
+## 8. Tech Stack
 
-**User:** U301
-**Role:** Manager
-**Question:** What is the Q4 forecast?
-
-Two authorized documents exist:
-
-```text
-DOC-301
-Version: 1.0
-Effective: 2026-06-01
-Forecast: ₹110 crore
-
-DOC-302
-Version: 2.0
-Effective: 2026-09-01
-Forecast: ₹125 crore
-```
-
-The system selects the latest authorized document, DOC-302.
-
-The LLM receives DOC-302 as the evidence and the assistant returns the latest authorized forecast.
+| Layer                | Technology                                           |
+| :------------------- | :--------------------------------------------------- |
+| Frontend / Interface | Streamlit                                            |
+| Backend              | Python                                               |
+| Agent Framework      | Custom Python agent workflow                         |
+| Database / Storage   | JSON documents/users + CSV security audit log        |
+| Hosting              | Streamlit Community Cloud                            |
+| LLM                  | OpenAI API integration with local mock/fallback mode |
+| Authorization        | Custom RBAC + document-level authorization           |
+| Version Handling     | Custom Python version resolver                       |
+| Testing              | Pytest                                               |
+| Source Control       | Git + GitHub                                         |
 
 ---
 
-## Security Design
+## 9. What to Expect From Our Current Build
 
-Security is enforced before LLM generation.
+**Working:**
 
-### Authorization Before LLM
+* Streamlit web interface.
+* Natural-language employee queries.
+* User and role selection for the prototype.
+* Document classification and authorization checks.
+* Role-based security levels.
+* Pre-LLM document filtering.
+* Unauthorized document protection.
+* Sensitive-query guardrails.
+* Version-aware evidence selection.
+* Authorized evidence passed to the LLM.
+* Answer citations showing document ID, title, version, and effective date.
+* Audit logging.
+* Security violation logging.
+* Admin Security Console.
+* Automated test suite with **23 passing tests**.
+* Test scenarios covering authorization, retrieval, versions, RBAC, guardrails, and security levels.
+* Deployed Streamlit prototype.
 
-The LLM does not receive the complete document collection.
+**Partly working, mocked, or hard-coded:**
 
-Only authorized evidence is included in the LLM request.
+* The prototype uses sample JSON documents and users rather than a live enterprise document repository.
+* Identity and role selection are provided through the demo interface rather than production authentication.
+* The LLM supports an OpenAI API integration, with a local evidence-based fallback when no API key is configured.
+* Retrieval currently uses lightweight keyword-based matching rather than a production vector database.
 
-### Sensitive Query Guardrails
+**Not working or not built yet:**
 
-Potentially sensitive requests are checked before retrieval proceeds.
+* Production enterprise SSO/OAuth authentication.
+* Live enterprise identity/HR integration.
+* Production-scale vector database.
+* Real-time enterprise document ingestion.
+* Production-grade distributed audit storage.
+* Full document lifecycle and access-policy management.
 
-Blocked requests do not generate an LLM evidence set.
+**What we'd most like to be judged on:**
 
-### Anti-Jailbreak Handling
-
-The system also checks for attempts to bypass the security workflow, such as requests to ignore existing instructions or act as an administrator.
-
-Such requests are blocked rather than allowing the user to bypass the authorization workflow.
-
-### No Confirmation of Restricted Information
-
-When the user does not have access, the system does not reveal the restricted document's contents.
-
-The response indicates that accessible information is unavailable rather than exposing protected information.
-
-### Security Audit
-
-Blocked security attempts are recorded in a local security audit CSV.
-
-The Admin Console displays the recorded security events for authorized administrative demonstration roles.
-
----
-
-## Tech Stack
-
-### Frontend
-
-* Streamlit
-
-### Backend
-
-* Python
-
-### AI
-
-* OpenAI API integration
-* Mock/fallback response mode for prototype demonstration when an API key is not configured
-
-### Retrieval
-
-* Python-based document retrieval
-* Metadata-based authorization filtering
-
-### Security
-
-* Role-Based Access Control (RBAC)
-* Document-level authorization
-* Security-level filtering
-* Query guardrails
-* Audit logging
-
-### Data
-
-* JSON documents and user metadata
-* CSV security audit log
-
-### Testing
-
-* Pytest
-
-### Version Control
-
-* Git
-* GitHub
+Our core security design: **authorization happens before LLM access**. Unauthorized documents are filtered out before their content can become LLM evidence, rather than relying on the LLM to decide what information an employee is allowed to see.
 
 ---
 
-## Current Build
+## 10. Future Scope
 
-The current prototype includes:
+### Idea 1
 
-* Streamlit research interface
-* User and role selection for demonstration
-* Role-based permission mapping
-* Document classification
-* Security-level metadata
-* Authorization filtering
-* Security guardrails
-* Anti-jailbreak blocking
-* Version-aware document selection
-* Authorized-only LLM evidence
-* Source citations
-* Request audit logging
-* Security violation logging
-* Admin Security Console
-* Automated test suite
-* GitHub repository
-* Streamlit deployment
+**Name:** Permission-Aware Query Rewriting
 
-The prototype has been tested against the main authorization, retrieval, versioning, LLM, RBAC, guardrail, and security-level scenarios.
+**What it is:** The agent detects when a question requires inaccessible information and reformulates it to find the closest useful answer using only authorized evidence.
 
----
+**Why it matters:** Users can still receive useful information without exposing protected details.
 
-## Testing
+**How we'd build it:** Add a query-planning component that maps required evidence to access permissions and generates a safe alternative query.
 
-The automated tests cover:
+**Done when:** A restricted query produces the closest useful answer from authorized evidence without revealing protected details.
 
-* Authorization decisions
-* Document retrieval
-* Version selection
-* Security behavior
-* LLM evidence handling
-* RBAC role levels
-* Role permissions
-* Query guardrails
-* Security-level filtering
+### Idea 2
 
-The primary demonstration scenarios are:
+**Name:** Continuous Access Monitoring
 
-| Test                                                       | Expected Result                    |
-| ---------------------------------------------------------- | ---------------------------------- |
-| Authorized Finance request                                 | Authorized information returned    |
-| Marketing user requesting Restricted Executive information | Access denied                      |
-| Multiple authorized versions                               | Latest authorized version selected |
-| Sensitive payroll request                                  | Security violation                 |
-| Credential/password request                                | Security violation                 |
-| Security-level violation                                   | Document filtered before LLM       |
+**What it is:** Continuously monitors employee permissions and updates document access when roles, departments, or clearance levels change.
+
+**Why it matters:** Prevents outdated permissions from continuing to grant access to sensitive information.
+
+**How we'd build it:** Connect the authorization engine with enterprise identity and HR systems and re-evaluate permissions dynamically.
+
+**Done when:** Changing a user's enterprise role automatically changes the documents available to the research agent.
+
+### Idea 3
+
+**Name:** Enterprise Vector Retrieval
+
+**What it is:** Replace the prototype keyword search with a permission-aware vector retrieval system for large document collections.
+
+**Why it matters:** Improves semantic search quality while maintaining authorization boundaries.
+
+**How we'd build it:** Add embeddings and a vector database with document-level access metadata enforced before content reaches the LLM.
+
+**Done when:** Large document collections can be searched semantically while unauthorized documents remain excluded from LLM evidence.
 
 ---
 
-## Auditability
+## 11. Additional Notes
 
-Every research request records relevant information such as:
+The current implementation is intentionally presented as a security-focused prototype. The selected employee identities and roles are demo controls rather than production authentication. Production deployment would integrate enterprise SSO, centralized identity management, dynamic authorization policies, secure document storage, and enterprise audit infrastructure.
 
-* User ID
-* Query
-* Authorization status
-* Selected evidence
-* Sources
-* Timestamp
+### Demonstrated Test Scenarios
 
-Security violations additionally record:
+**Test A — Authorized Answer**
 
-* Timestamp
-* User role
-* Query
-* Violation type
+User U102, Finance, asks for the Q4 revenue forecast. The system retrieves DOC-101 because the document is authorized for the user and returns the authorized forecast of **120 crore** from version 2.0.
 
-This provides an audit trail for demonstrating how security decisions were made.
+**Test B — Relevant but Unauthorized**
 
----
+User U205, Marketing, asks for the Q4 revenue forecast. The matching restricted document is not authorized for the user. The system returns **ACCESS DENIED** and sends **no document evidence to the LLM**.
 
-## Why This Approach is Secure
+**Test C — Authorized Conflict**
 
-The central security principle is:
+User U301, Finance, asks for the latest Q4 forecast. Both authorized versions are considered, and the system selects DOC-302, version 2.0, effective 2026-09-01, with the authorized forecast of **125 crore**.
 
-> **Authorization happens before information reaches the LLM.**
+**Key Security Principle:**
 
-The LLM is therefore not responsible for deciding whether a document should be accessible.
+> Authorization is enforced before information reaches the LLM.
 
-Instead, the application determines what evidence the user is authorized to receive and only then constructs the LLM request.
+**Project Links:**
 
-This creates a clear security boundary between enterprise data access and AI generation.
+**GitHub Repository:** https://github.com/rebbajahnavi/secure-enterprise-ai-research-agent
 
----
-
-## Future Scope
-
-Future versions could include:
-
-* Enterprise SSO authentication
-* Integration with corporate identity providers
-* Real employee directory integration
-* Production vector databases
-* Enterprise document-management connectors
-* More advanced semantic retrieval
-* Attribute-Based Access Control (ABAC)
-* Fine-grained document and field-level permissions
-* Encryption and key-management integration
-* More comprehensive policy engines
-* Continuous security monitoring
-* Production-grade audit infrastructure
-* Human approval workflows for highly sensitive requests
-
----
-
-## Prototype Limitations
-
-This is a hackathon prototype rather than a production enterprise security system.
-
-User identities and roles are currently selected through the demonstration interface rather than verified through a production authentication system.
-
-The document collection is local and intentionally small so that the authorization workflow and security behavior can be demonstrated clearly.
-
-Production deployment would require integration with enterprise identity, document-management, policy, monitoring, and compliance systems.
-
----
-
-## Demo
-
-**Deployed Prototype:**
-
-[Secure Enterprise AI Research Agent — Streamlit](https://secure-enterprise-ai-research-agent-fastandcurious.streamlit.app/?utm_source=chatgpt.com)
-
-**GitHub Repository:** [Paste your GitHub repository link here]
-
-### Recommended Demo Evidence
-
-Include screenshots demonstrating:
-
-1. **Authorized request** — authorized answer with source document.
-2. **Restricted request** — `ACCESS DENIED` with `LLM Evidence: None`.
-3. **Latest-version selection** — DOC-302, Version 2.0, with the latest authorized forecast.
-4. **Security violation** — blocked sensitive or jailbreak-style request.
-5. **Admin Security Console** — security audit records.
-
----
-
-## Conclusion
-
-The prototype demonstrates an authorization-aware enterprise AI research workflow in which security decisions are enforced before LLM generation.
-
-The key design principle is that the AI model should only receive evidence that has already passed the application's authorization checks.
-
-This allows the system to provide useful enterprise research capabilities while maintaining a clear separation between document access control and AI generation.
+**Live Demo:** https://secure-enterprise-ai-research-agent-fastandcurious.streamlit.app/
