@@ -315,3 +315,74 @@ Built as a hackathon project by our team.
 **Core principle:**
 
 ### 🔒 Search widely, authorize strictly, and send only authorized evidence to the AI.
+## Demo Scenarios
+
+### Test A — Authorized User
+
+User: U102  
+Department: Finance  
+Clearance: Internal
+
+Question:
+
+> What is the Q4 revenue forecast?
+
+Expected result:
+
+- Answer: 120 crore
+- Source: DOC-101
+- Authorization: ALLOWED
+- LLM Evidence: DOC-101
+
+### Test B — Unauthorized User
+
+User: U205  
+Department: Marketing  
+Clearance: Internal
+
+Question:
+
+> What is the Q4 revenue forecast?
+
+Expected result:
+
+- Access: DENIED
+- LLM Evidence: None
+- Restricted value from DOC-201 must not be disclosed
+
+### Test C — Latest Authorized Version
+
+User: U301  
+Department: Finance  
+Clearance: Internal
+
+Question:
+
+> What is the Q4 forecast?
+
+Expected result:
+
+- Latest authorized document: DOC-302
+- Version: 2.0
+- Answer: 125 crore
+
+## Security Guarantee
+
+The system follows this order:
+
+User Request
+→ Document Retrieval
+→ Authorization Check
+→ Version Selection
+→ Authorized Evidence
+→ LLM
+→ Answer
+
+Unauthorized document content is removed before the LLM receives evidence.
+
+## Testing
+
+Run:
+
+```powershell
+python -m pytest -v
