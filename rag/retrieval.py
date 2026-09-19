@@ -1,14 +1,22 @@
-from auth.authorization import get_authorized_documents
-from auth.rbac import get_role_level
+from auth.authorization import (
+    get_authorized_documents,
+    get_user,
+    CLEARANCE_LEVELS
+)
 
 
 def search_documents(user_id, query, role=None):
     authorized_documents = get_authorized_documents(user_id)
 
-    if role is None:
-        user_security_level = 4
-    else:
-        user_security_level = get_role_level(role)
+    user = get_user(user_id)
+
+    if user is None:
+        return []
+
+    user_security_level = CLEARANCE_LEVELS.get(
+        user["clearance"],
+        0
+    )
 
     query_lower = query.lower().strip()
     query_words = set(query_lower.split())
