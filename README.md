@@ -1,4 +1,4 @@
-# Fast & Curious
+# FAST & CURIOUS
 
 ## 1. Team
 
